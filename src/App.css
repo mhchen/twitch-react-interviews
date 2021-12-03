@@ -1,38 +1,71 @@
-.App {
-  text-align: center;
+html {
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.button {
+  background-color: cornflowerblue;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  padding: .75rem 1.5rem;
+  border-radius: .5rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.main {
+  max-width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  height: 20rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .5);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.modal {
+  background-color: white;
+  max-width: 37.5rem;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.modal--xl {
+  max-width: 60rem;
+}
+
+.button--icon {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.modal__header {
+  text-align: left;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  padding-bottom: 1rem;
+}
+
+.modal__body {
+  padding: 3rem 2rem;
+}
+
+.modal__footer {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }

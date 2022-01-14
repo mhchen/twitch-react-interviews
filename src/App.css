@@ -5,3 +5,42 @@ html {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+
+main {
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+input {
+  flex: 1;
+}
+
+.input-container {
+  grid-gap: 8px;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.guess {
+  display: flex;
+  grid-gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tile {
+  background-color: #777;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.tile--green {
+  background-color: #508814;
+}
+
+.tile--yellow {
+  background-color: #c4c16e;
+}

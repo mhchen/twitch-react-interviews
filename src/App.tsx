@@ -1,12 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 
-interface Character {
+type Character = {
   character: string;
-  yellow: boolean;
-  green: boolean;
-}
+} & (
+  | {
+      incorrect: true;
+    }
+  | {
+      inProgress: true;
+    }
+  | {
+      yellow: true;
+    }
+  | {
+      green: true;
+    }
+);
 
 type Guess = Character[];
 
@@ -30,7 +41,6 @@ function convertInputToGuess(input: string, todaysWord: string): Guess {
       guess[i] = {
         character,
         green,
-        yellow: false,
       };
     }
   });
@@ -44,36 +54,57 @@ function convertInputToGuess(input: string, todaysWord: string): Guess {
 
     if (yellow) {
       todaysWordHash[character]--;
+      guess[i] = {
+        character,
+        yellow: true,
+      };
+    } else {
+      guess[i] = {
+        character,
+        incorrect: true,
+      };
     }
-
-    guess[i] = {
-      character,
-      green: false,
-      yellow,
-    };
-    console.log(guess, guess[i]);
   });
-
-  console.log(guess);
   return guess;
 }
 
+function convertCurrentInputToGuess(input: string): Guess {
+  return input.split('').map((character) => ({
+    character,
+    inProgress: true,
+  }));
+}
+
 type GuessComponentProps = {
-  guess: Guess;
+  guess?: Guess;
 };
+
+const LETTERS_PER_WORD = 5;
 
 function GuessComponent({ guess }: GuessComponentProps) {
   return (
     <div className="guess">
-      {guess.map((character) => (
-        <div
-          className={`tile ${character.green ? 'tile--green' : ''} ${
-            character.yellow ? 'tile--yellow' : ''
-          }`}
-        >
-          {character.character}
-        </div>
-      ))}
+      {[...Array(LETTERS_PER_WORD).keys()].map((i) => {
+        const character = guess?.[i];
+
+        let characterClass: string;
+        if (character) {
+          if ('green' in character) {
+            characterClass = 'tile--green';
+          } else if ('yellow' in character) {
+            characterClass = 'tile--yellow';
+          } else if ('inProgress' in character) {
+            characterClass = 'tile--in-progress tile--bounce';
+          } else {
+            characterClass = 'tile--incorrect';
+          }
+        }
+        return (
+          <div className={`tile ${characterClass || ''}`}>
+            {character?.character}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -81,8 +112,8 @@ function GuessComponent({ guess }: GuessComponentProps) {
 const TOTAL_GUESSES = 6;
 
 export default function App() {
-  const [previousGuesses, setPreviousGuesses] = useState<Guess[]>([]);
-  const [input, setInput] = useState('');
+  const [guesses, setGuesses] = useState<Guess[]>([]);
+  const [currentGuess, setCurrentGuess] = useState('');
   const [todaysWord, setTodaysWord] = useState<string | null>(null);
   const [hasWon, setHasWon] = useState(false);
   const [hasLost, setHasLost] = useState(false);
@@ -95,42 +126,67 @@ export default function App() {
       });
   }, []);
 
-  const checkInput = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (input.length !== 5) {
+  const checkInput = async () => {
+    if (currentGuess.length !== 5) {
       return;
     }
 
-    const isValid = await fetch(
+    const isValid = (await fetch(
       'https://api.frontendeval.com/fake/word/valid',
       {
         method: 'POST',
-        body: JSON.stringify({ word: input }),
+        body: JSON.stringify({ word: currentGuess }),
         headers: {
           'Content-Type': 'application/json',
         },
       },
-    ).then((res) => res.json());
+    ).then((res) => res.json())) as boolean;
 
     if (!isValid) {
       return;
     }
 
-    const guess = convertInputToGuess(input, todaysWord!);
+    const guess = convertInputToGuess(currentGuess, todaysWord!);
 
-    if (guess.every((character) => character.green)) {
+    if (guess.every((character) => 'green' in character)) {
       setHasWon(true);
     }
 
-    const guesses = [...previousGuesses, guess];
+    const newGuesses = [...guesses, guess];
 
     if (guesses.length === TOTAL_GUESSES) {
       setHasLost(true);
     }
 
-    setPreviousGuesses(guesses);
+    setGuesses(newGuesses);
   };
+
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      const key = e.key.toUpperCase();
+      if (e.metaKey || e.ctrlKey || hasWon || hasLost) {
+        return;
+      }
+
+      if (!/^[A-Z]$/.test(key) && e.key !== 'Backspace' && e.key !== 'Enter') {
+        return;
+      }
+
+      if (e.key === 'Backspace') {
+        setCurrentGuess(currentGuess.slice(0, currentGuess.length - 1));
+      } else if (e.key === 'Enter') {
+        void checkInput();
+        setCurrentGuess('');
+      } else if (currentGuess.length <= 5) {
+        setCurrentGuess(currentGuess + key);
+      }
+    };
+    document.body.addEventListener('keydown', listener);
+
+    return () => {
+      document.body.removeEventListener('keydown', listener);
+    };
+  }, [currentGuess, hasWon, hasLost]);
 
   if (!todaysWord) {
     return null;
@@ -140,25 +196,13 @@ export default function App() {
     <main>
       {hasWon && <div>You win!</div>}
       {hasLost && <div>{todaysWord}</div>}
-      {!hasWon && !hasLost && (
-        <>
-          You have {TOTAL_GUESSES - previousGuesses.length} guesses remaining.
-          <form onSubmit={checkInput}>
-            <div className="input-container">
-              <input
-                type="text"
-                value={input}
-                maxLength={5}
-                onChange={(e) => setInput(e.target.value.toUpperCase())}
-              />
-              <button type="submit">Submit</button>
-            </div>
-          </form>
-        </>
-      )}
-      {previousGuesses.map((guess, i) => (
-        <GuessComponent key={i} guess={guess} />
-      ))}
+      {[...Array(TOTAL_GUESSES).keys()].map((i) => {
+        const guess =
+          i === guesses.length
+            ? convertCurrentInputToGuess(currentGuess)
+            : guesses[i];
+        return <GuessComponent key={i} guess={guess} />;
+      })}
     </main>
   );
 }

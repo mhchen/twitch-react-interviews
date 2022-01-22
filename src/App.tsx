@@ -87,7 +87,7 @@ function GuessComponent({ guess }: GuessComponentProps) {
       {[...Array(LETTERS_PER_WORD).keys()].map((i) => {
         const character = guess?.[i];
 
-        let characterClass: string;
+        let characterClass = '';
         if (character) {
           if ('green' in character) {
             characterClass = 'tile--green';
@@ -100,9 +100,7 @@ function GuessComponent({ guess }: GuessComponentProps) {
           }
         }
         return (
-          <div className={`tile ${characterClass || ''}`}>
-            {character?.character}
-          </div>
+          <div className={`tile ${characterClass}`}>{character?.character}</div>
         );
       })}
     </div>

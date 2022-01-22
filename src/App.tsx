@@ -192,15 +192,17 @@ export default function App() {
 
   return (
     <main>
-      {hasWon && <div>You win!</div>}
-      {hasLost && <div>{todaysWord}</div>}
-      {[...Array(TOTAL_GUESSES).keys()].map((i) => {
-        const guess =
-          i === guesses.length
-            ? convertCurrentInputToGuess(currentGuess)
-            : guesses[i];
-        return <GuessComponent key={i} guess={guess} />;
-      })}
+      <div>
+        {hasWon && <div>You win!</div>}
+        {hasLost && <div>{todaysWord}</div>}
+        {[...Array(TOTAL_GUESSES).keys()].map((i) => {
+          const guess =
+            i === guesses.length
+              ? convertCurrentInputToGuess(currentGuess)
+              : guesses[i];
+          return <GuessComponent key={i} guess={guess} />;
+        })}
+      </div>
     </main>
   );
 }

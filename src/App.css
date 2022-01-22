@@ -7,8 +7,10 @@ html {
 }
 
 main {
-  margin: 40px auto;
-  max-width: 400px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 input {
@@ -28,8 +30,8 @@ input {
 }
 
 .tile {
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  aspect-ratio: 1;
   display: flex;
   justify-content: center;
   align-items: center;

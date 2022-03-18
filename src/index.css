@@ -11,3 +11,77 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+main {
+  margin: 0 auto;
+  padding-top: 4rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  max-width: 40rem;
+}
+
+.title {
+  margin-bottom: 2rem;
+}
+
+.autocomplete__input {
+  padding: 1rem .5rem;
+  width: 100%;
+  font-size: 20px;
+}
+
+.autocomplete {
+  position: relative;
+}
+
+.autocomplete__results {
+  border: 1px solid #333;
+  background: white;
+  margin: 0;
+  list-style: none;
+  padding-left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
+.autocomplete__results__button {
+  padding: .5rem;
+  width: 100%;
+  text-align: left;
+}
+
+button {
+  appearance: none;
+  cursor: pointer;
+  border: 0;
+  box-shadow: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.shopping-list {
+  margin: 0;
+  font-size: 18px;
+  margin-top: 1rem;
+  list-style: none;
+  padding-left: 0;
+  width: 100%;
+}
+
+.shopping-list__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: .1rem;
+  padding-bottom: .1rem;
+}
+
+.shopping-list__item[data-checked="true"] {
+  opacity: .4;
+}
+
+.shopping-list__check {
+  margin-right: .5rem;
+  display: inline-block;
+}
